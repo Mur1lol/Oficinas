@@ -3,24 +3,30 @@
  
 const int PassoPorVolta = 500;  // Passo por Volta do Motor de Passo
 
-bool botao_ativo = false;
-
 int contador_card = 0;   // 0 -> 2
 int contador_player = 0; // 0 -> 2
 
-const int LED = A0;
-const int botao_start = A1;
-const int botao_card = A2;
-const int botao_player = A3;
+const int LED = A3;
+const int botao_start = A2;
+const int botao_card = A1;
+const int botao_player = A0;
 
-const int pino_a = 11; 
-const int pino_b = 8; 
-const int pino_c = 9; 
-const int pino_d = 10;
- 
+const int pino_a_card = 3; 
+const int pino_b_card = 0;
+const int pino_c_card = 1;
+const int pino_d_card = 2;
+
+const int pino_a_player = 7; 
+const int pino_b_player = 4; 
+const int pino_c_player = 5; 
+const int pino_d_player = 6;
+
+int num_cards=1;
+int num_players=1;
+
 // Inicializa a biblioteca Stepper.h
 // O motor de passo =>  MotorP
-Stepper MotorP(PassoPorVolta, 4, 6, 5, 7);
+Stepper MotorP(PassoPorVolta, 8, 10, 9, 11);
  
 void setup() {
   pinMode(LED, OUTPUT);
@@ -28,13 +34,22 @@ void setup() {
   pinMode(botao_card, INPUT);
   pinMode(botao_player, INPUT);
 
-  pinMode(pino_a, OUTPUT);
-  pinMode(pino_b, OUTPUT);
-  pinMode(pino_c, OUTPUT);
-  pinMode(pino_d, OUTPUT);
+  for(int i=0; i<8;i++){
+    pinMode(i, OUTPUT);
+  }
+
+  // pinMode(pino_a_card, OUTPUT);
+  // pinMode(pino_b_card, OUTPUT);
+  // pinMode(pino_c_card, OUTPUT);
+  // pinMode(pino_d_card, OUTPUT);
+
+  // pinMode(pino_a_player, OUTPUT);
+  // pinMode(pino_b_player, OUTPUT);
+  // pinMode(pino_c_player, OUTPUT);
+  // pinMode(pino_d_player, OUTPUT);
 
   // Ajusta velocidade para 60 RPM
-  MotorP.setSpeed(60);
+  MotorP.setSpeed(30);
 }
  
 void loop() {
@@ -46,134 +61,107 @@ void loop() {
     start(players, cards);
     delay(5000);
   }
-
-  if(botao_ativo){
-    
-  }
-
 }
 
 void start(int players, int cards) {
-  /*
-  angulo/0,175781
-
-  2 pessoas - 180º  - 1024
-  3 pessoas - 120º  - 683
-  4 pessoas - 90º   - 512
-  5 pessoas - 72º   - 410
-  6 pessoas - 60º   - 341
-  7 pessoas - 51,4º - 292
-  8 pessoas - 45º   - 256
-  9 pessoas - 40º   - 228
-  */
-
-  int passo[8] = {1024,683,512,410,341,292,256,228};
+  int passo = 2048/players;
   digitalWrite(LED, HIGH);
-
-  for(int x=0; x<8; x++){
-    passo[x] = passo[x]/2;
-  }
 
   for(int i=0; i<cards; i++) {
     for(int j=0; j<players; j++) {
-      MotorP.step(passo[players-2]);
+      MotorP.step(passo);
       delay(1000);
     }
-
-    for(int j=0; j<players; j++) {
-      MotorP.step(passo[players-2]*-1);
-      delay(1000);
-    }
-    
   }
-
-  botao_ativo = false;
   digitalWrite(LED, LOW);
 }
 
-int setNumPlayers(){
-  int num_players;
-  
+int setNumPlayers(){  
   if(digitalRead(botao_player)){
-    contador_player++;
+    contador_player = (num_cards * (num_players+1)<= 52)? contador_player++: 0;
     delay(500);
   }
-  num_players = (contador_player)%8 + 2;
+  num_players = (contador_player)%9 + 1;
 
-  //display(num_players);
+  display(num_players, pino_a_player, pino_b_player, pino_c_player, pino_d_player);
 
   return num_players;
 }
 
 int setNumCards(){
-  int num_cards;
- 
   if(digitalRead(botao_card)){
-    contador_card++;
+    contador_card = ((num_cards+1) * num_players<= 52)? contador_card++ : 0;
     delay(500);
   }
-  num_cards = (contador_card)%8 + 2;
+  num_cards = (contador_card)%9 + 1;
 
-  display(num_cards);
+  display(num_cards, pino_a_card, pino_b_card, pino_c_card, pino_d_card);
 
   return num_cards;
 }
 
-void display(int value) {
-  if(value == 2) {
+void display(int value, int A, int B, int C, int D) {
+  if(value == 1) {
+    // aciona os bits de modo a formar o número 0001 = 1 (um):
+    digitalWrite(A, HIGH);
+    digitalWrite(B, LOW);
+    digitalWrite(C, LOW);
+    digitalWrite(D, LOW);
+  }
+  else if(value == 2) {
     // aciona os bits de modo a formar o número 0010 = 2 (dois):
-  digitalWrite(pino_a, LOW);
-  digitalWrite(pino_b, HIGH);
-  digitalWrite(pino_c, LOW);
-  digitalWrite(pino_d, LOW);
+    digitalWrite(A, LOW);
+    digitalWrite(B, HIGH);
+    digitalWrite(C, LOW);
+    digitalWrite(D, LOW);
   }
   else if(value == 3) {
     // aciona os bits de modo a formar o número 0011 = 3 (três):
-  digitalWrite(pino_a, HIGH);
-  digitalWrite(pino_b, HIGH);
-  digitalWrite(pino_c, LOW);
-  digitalWrite(pino_d, LOW);
+    digitalWrite(A, HIGH);
+    digitalWrite(B, HIGH);
+    digitalWrite(C, LOW);
+    digitalWrite(D, LOW);
   }
   else if(value == 4) {
     // aciona os bits de modo a formar o número 0100 = 4 (quatro):
-  digitalWrite(pino_a, LOW);
-  digitalWrite(pino_b, LOW);
-  digitalWrite(pino_c, HIGH);
-  digitalWrite(pino_d, LOW);
+    digitalWrite(A, LOW);
+    digitalWrite(B, LOW);
+    digitalWrite(C, HIGH);
+    digitalWrite(D, LOW);
   }
   else if(value == 5) {
     // aciona os bits de modo a formar o número 0101 = 5 (cinco):
-  digitalWrite(pino_a, HIGH);
-  digitalWrite(pino_b, LOW);
-  digitalWrite(pino_c, HIGH);
-  digitalWrite(pino_d, LOW);
+    digitalWrite(A, HIGH);
+    digitalWrite(B, LOW);
+    digitalWrite(C, HIGH);
+    digitalWrite(D, LOW);
   }
   else if(value == 6) {
     // aciona os bits de modo a formar o número 0110 = 6 (seis):
-  digitalWrite(pino_a, LOW);
-  digitalWrite(pino_b, HIGH);
-  digitalWrite(pino_c, HIGH);
-  digitalWrite(pino_d, LOW);
+    digitalWrite(A, LOW);
+    digitalWrite(B, HIGH);
+    digitalWrite(C, HIGH);
+    digitalWrite(D, LOW);
   }
   else if(value == 7) {
     // aciona os bits de modo a formar o número 0111 = 7 (sete):
-  digitalWrite(pino_a, HIGH);
-  digitalWrite(pino_b, HIGH);
-  digitalWrite(pino_c, HIGH);
-  digitalWrite(pino_d, LOW);
+    digitalWrite(A, HIGH);
+    digitalWrite(B, HIGH);
+    digitalWrite(C, HIGH);
+    digitalWrite(D, LOW);
   }
   else if(value == 8) {
     // aciona os bits de modo a formar o número 1000 = 8 (oito):
-  digitalWrite(pino_a, LOW);
-  digitalWrite(pino_b, LOW);
-  digitalWrite(pino_c, LOW);
-  digitalWrite(pino_d, HIGH);
+    digitalWrite(A, LOW);
+    digitalWrite(B, LOW);
+    digitalWrite(C, LOW);
+    digitalWrite(D, HIGH);
   }
   else if(value == 9) {
     // aciona os bits de modo a formar o número 1001 = 9 (nove):
-  digitalWrite(pino_a, HIGH);
-  digitalWrite(pino_b, LOW);
-  digitalWrite(pino_c, LOW);
-  digitalWrite(pino_d, HIGH);
+    digitalWrite(A, HIGH);
+    digitalWrite(B, LOW);
+    digitalWrite(C, LOW);
+    digitalWrite(D, HIGH);
   }
 }
