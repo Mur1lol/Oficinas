@@ -3,8 +3,11 @@
  
 const int PassoPorVolta = 500;  // Passo por Volta do Motor de Passo
 
-int contador_card = 0;   // 0 -> 2
-int contador_player = 0; // 0 -> 2
+int contador_card = 0;   // 0 -> 1
+int contador_player = 0; // 0 -> 1
+
+int num_cards=1;
+int num_players=1;
 
 const int LED = A3;
 const int botao_start = A2;
@@ -21,9 +24,6 @@ const int pino_b_player = 4;
 const int pino_c_player = 5; 
 const int pino_d_player = 6;
 
-int num_cards=1;
-int num_players=1;
-
 // Inicializa a biblioteca Stepper.h
 // O motor de passo =>  MotorP
 Stepper MotorP(PassoPorVolta, 8, 10, 9, 11);
@@ -38,18 +38,8 @@ void setup() {
     pinMode(i, OUTPUT);
   }
 
-  // pinMode(pino_a_card, OUTPUT);
-  // pinMode(pino_b_card, OUTPUT);
-  // pinMode(pino_c_card, OUTPUT);
-  // pinMode(pino_d_card, OUTPUT);
-
-  // pinMode(pino_a_player, OUTPUT);
-  // pinMode(pino_b_player, OUTPUT);
-  // pinMode(pino_c_player, OUTPUT);
-  // pinMode(pino_d_player, OUTPUT);
-
   // Ajusta velocidade para 60 RPM
-  MotorP.setSpeed(30);
+  MotorP.setSpeed(20);
 }
  
 void loop() {
@@ -78,7 +68,7 @@ void start(int players, int cards) {
 
 int setNumPlayers(){  
   if(digitalRead(botao_player)){
-    contador_player = (num_cards * (num_players+1)<= 52)? contador_player++: 0;
+    contador_player = (num_cards * (num_players+1)<= 52)? contador_player+1: 0;
     delay(500);
   }
   num_players = (contador_player)%9 + 1;
@@ -90,7 +80,7 @@ int setNumPlayers(){
 
 int setNumCards(){
   if(digitalRead(botao_card)){
-    contador_card = ((num_cards+1) * num_players<= 52)? contador_card++ : 0;
+    contador_card = ((num_cards+1) * num_players<= 52)? contador_card+1 : 0;
     delay(500);
   }
   num_cards = (contador_card)%9 + 1;

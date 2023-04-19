@@ -10,11 +10,7 @@ número de jogadores e cartas desejadas.
 ## Autores
 
 - [@Mur1lol](https://www.github.com/Mur1lol)
-
-
-## Fluxograma
-
-<img src="https://www.overleaf.com/project/640f4dfdba45038bf4e64d41/file/641daa834128b00bf7db1b2b" width="50%">
+- [@kloster](https://www.github.com/Mur1lol)
 
 ## Documentação
 
