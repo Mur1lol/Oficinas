@@ -1,14 +1,15 @@
-// Gira 90 graus nos 2 sentidos
-#include  <Stepper.h> // inclue a biblioteca Stepper.h
+#include  <Stepper.h> 
+#include <Servo.h>
  
 const int PassoPorVolta = 500;  // Passo por Volta do Motor de Passo
 
-int contador_card = 0;   // 0 -> 1
-int contador_player = 0; // 0 -> 1
-
+//Iniciando as variaveis
+int contador_card = 2;   // 0 -> 1
+int contador_player = 3; // 0 -> 1
 int num_cards=1;
 int num_players=1;
 
+//Definindo os pinos
 const int LED = A3;
 const int botao_start = A2;
 const int botao_card = A1;
@@ -24,9 +25,12 @@ const int pino_b_player = 4;
 const int pino_c_player = 5; 
 const int pino_d_player = 6;
 
-// Inicializa a biblioteca Stepper.h
-// O motor de passo =>  MotorP
+const int servo = 12;
+const int rele = 13;
+
 Stepper MotorP(PassoPorVolta, 8, 10, 9, 11);
+
+Servo myservo; 
  
 void setup() {
   pinMode(LED, OUTPUT);
@@ -34,12 +38,18 @@ void setup() {
   pinMode(botao_card, INPUT);
   pinMode(botao_player, INPUT);
 
+  pinMode(rele, OUTPUT);
+
   for(int i=0; i<8;i++){
     pinMode(i, OUTPUT);
   }
 
-  // Ajusta velocidade para 60 RPM
+  myservo.attach(servo);
+
+  // Ajusta velocidade para 20 RPM
   MotorP.setSpeed(20);
+
+  digitalWrite(rele, HIGH);
 }
  
 void loop() {
@@ -49,21 +59,27 @@ void loop() {
 
   if(digitalRead(botao_start)){
     start(players, cards);
-    delay(5000);
+    delay(1000);
   }
 }
 
 void start(int players, int cards) {
   int passo = 2048/players;
   digitalWrite(LED, HIGH);
+  digitalWrite(rele, LOW);
 
   for(int i=0; i<cards; i++) {
     for(int j=0; j<players; j++) {
       MotorP.step(passo);
-      delay(1000);
+      delay(500);
+      myservo.write(180); // Comando para mandar o servo para posição 180
+      delay(500); // Espera de 500 ms
+      myservo.write(0); // Comando para mandar o servo para posição 0
+      delay(500); // Espera de 500 ms
     }
   }
   digitalWrite(LED, LOW);
+  digitalWrite(rele, HIGH);
 }
 
 int setNumPlayers(){  
