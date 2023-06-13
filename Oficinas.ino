@@ -4,8 +4,8 @@
 const int PassoPorVolta = 500;  // Passo por Volta do Motor de Passo
 
 //Iniciando as variaveis
-int contador_card = 2;   // 0 -> 1
-int contador_player = 3; // 0 -> 1
+int contador_card = 0;   // 0 -> 1
+int contador_player = 0; // 0 -> 1
 int num_cards=1;
 int num_players=1;
 
@@ -66,20 +66,20 @@ void loop() {
 void start(int players, int cards) {
   int passo = 2048/players;
   digitalWrite(LED, HIGH);
-  digitalWrite(rele, LOW);
-
+  
   for(int i=0; i<cards; i++) {
     for(int j=0; j<players; j++) {
       MotorP.step(passo);
       delay(500);
+      digitalWrite(rele, LOW);
       myservo.write(180); // Comando para mandar o servo para posição 180
       delay(500); // Espera de 500 ms
       myservo.write(0); // Comando para mandar o servo para posição 0
-      delay(500); // Espera de 500 ms
+      delay(1000); // Espera de 500 ms
+      digitalWrite(rele, HIGH);
     }
   }
   digitalWrite(LED, LOW);
-  digitalWrite(rele, HIGH);
 }
 
 int setNumPlayers(){  
