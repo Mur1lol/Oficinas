@@ -10,7 +10,6 @@ int num_cards=1;
 int num_players=1;
 
 //Definindo os pinos
-const int LED = A3;
 const int botao_start = A2;
 const int botao_card = A1;
 const int botao_player = A0;
@@ -33,7 +32,6 @@ Stepper MotorP(PassoPorVolta, 8, 10, 9, 11);
 Servo myservo; 
  
 void setup() {
-  pinMode(LED, OUTPUT);
   pinMode(botao_start, INPUT);
   pinMode(botao_card, INPUT);
   pinMode(botao_player, INPUT);
@@ -46,14 +44,14 @@ void setup() {
 
   myservo.attach(servo);
 
-  // Ajusta velocidade para 20 RPM
-  MotorP.setSpeed(20);
+  // Ajusta velocidade para 49 RPM
+  MotorP.setSpeed(49);
 
   digitalWrite(rele, HIGH);
 }
  
 void loop() {
-  //Por padrão o jogo começa com 2 jogadores e 2 cartas
+  //Por padrão o jogo começa com 1 jogador e 1 carta
   int players = setNumPlayers();
   int cards = setNumCards();
 
@@ -65,7 +63,6 @@ void loop() {
 
 void start(int players, int cards) {
   int passo = 2048/players;
-  digitalWrite(LED, HIGH);
   
   for(int i=0; i<cards; i++) {
     for(int j=0; j<players; j++) {
@@ -79,7 +76,6 @@ void start(int players, int cards) {
       digitalWrite(rele, HIGH);
     }
   }
-  digitalWrite(LED, LOW);
 }
 
 int setNumPlayers(){  
